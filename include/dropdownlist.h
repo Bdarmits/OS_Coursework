@@ -11,7 +11,6 @@ public:
     int is_active = 0;
     MyDialog dialogddl;
 
-
     button_clicked_state_t is_button_clicked(const XButtonEvent *xbutton) override;
     void spam_menu();
     void destroy_menu();
@@ -19,4 +18,5 @@ public:
 
 
 };
+
 #endif //PROJECT_DROPDOWNLIST_H

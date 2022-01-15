@@ -6,7 +6,6 @@
 
 typedef enum {BTN_IGNORE_CLICK = 0, BTN_IS_CLICKED = 1, BTN_OTHER1 = 2, BTN_OTHER2 = 3 } button_clicked_state_t;
 
-
 class Button : public MyWidget{
 public:
     int mouseover;
@@ -23,16 +22,11 @@ public:
 
     virtual void draw();
 
-    void expose();//
-// Created by bohdan on 17.12.21.
-//
-
+    void expose() override;
 
 private:
 
     int is_point_inside(int px, int py);
-    void free_button();
-
 };
 
 

@@ -1,16 +1,13 @@
 #include "../include/radiobutton.h"
 
-
 button_clicked_state_t RadioButton::is_button_clicked(const XButtonEvent *xbutton) {
+//    A function for tracking if radio button was pressed
     if (xbutton->button != Button1)
         return BTN_IGNORE_CLICK;
-
     if (mouseover) {
         clicked = xbutton->type == ButtonPress ? 1 : 0;
-
         if (!clicked) {
             activ_radio = activ_radio == 0 ? 1 : 0;
-
             return BTN_IS_CLICKED;
         }
         return BTN_OTHER1;
@@ -20,15 +17,12 @@ button_clicked_state_t RadioButton::is_button_clicked(const XButtonEvent *xbutto
     }
 };
 
-
 void RadioButton::draw() {
-
+//    Function for drawing the radiobutton on the window
     XClearArea(display, window, x, y, width, height, False);
-
     int textrbx, textrby;
     textrbx = x + 5;
     textrby = y + height - 15;
-
 
     // change color of the button if mouse is over the button
     if (activ_radio == 1) {
@@ -49,17 +43,10 @@ void RadioButton::draw() {
     int textx, texty;
     textx = x + 20;
     texty = y + height - 3;
-
     // draw text inside button
     XDrawString(display, window, gc, clicked + textx, clicked + texty,
                 text, strlen(text));
-
     XSetForeground(display, gc, fg);
     XSetBackground(display, gc, bg);
-
 };
-
-//void RadioButton::expose() {};
-
-//TODO: implement helper functions if there are such
 

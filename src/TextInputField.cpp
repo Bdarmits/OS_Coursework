@@ -1,15 +1,13 @@
 #include "../include/TextInputField.h"
 
 button_clicked_state_t TextInputField::is_button_clicked(const XButtonEvent *xbutton) {
+//    A function for tracking if field was pressed
     if (xbutton->button != Button1)
         return BTN_IGNORE_CLICK;
-
     if (mouseover) {
         clicked = xbutton->type == ButtonPress ? 1 : 0;
-
         if (!clicked) {
             activ_radio = activ_radio == 0 ? 1 : 0;
-
             return BTN_IS_CLICKED;
         }
         return BTN_OTHER1;
@@ -20,6 +18,7 @@ button_clicked_state_t TextInputField::is_button_clicked(const XButtonEvent *xbu
 };
 
 void TextInputField::add_text(XEvent report){
+//    A function for displaying
     if(report.xkey.keycode == 0x16 ) {
         (*this).nickname = (*this).nickname.substr(0, (*this).nickname.size() - 1);
         (*this).expose();

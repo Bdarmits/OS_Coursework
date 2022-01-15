@@ -12,28 +12,15 @@ struct window_info{
     GC gc;
 };
 
-
 class MyDialog {
 public:
     window_info wi;
-
-    //TODO: vector of possible events, for further their handling
-    //std::vector<XEvent.type> events_types;
-
     std::vector<MyWidget> widgets;
     int xd, yd, width, height;
-
     void init(const char *title, int in_x, int in_y, int Width, int Height);
-
     void draw();
-
     void expose();
-
     void add_widget(MyWidget widget);
-
-
-
 };
-
 
 #endif //PROJECT_MYDIALOG_H

@@ -1,7 +1,5 @@
 ///xfontsel///
 #include <iostream>
-#include "include/window.h"
-#include "include/widget.h"
 #include "include/text.h"
 #include "include/button.h"
 #include "include/MyDialog.h"
@@ -12,22 +10,10 @@
 #include <X11/Xlib.h>
 
 
-
-XImage *create_ximage(Display *display, Visual *visual, Window window)
-{
-
-    XWindowAttributes attr = {};
-    XGetWindowAttributes(display, window, &attr);
-
-    auto widthimg = attr.width;
-    auto heightimg = attr.height;
-
-    return XGetImage(display, window, 0, 0, widthimg, heightimg, AllPlanes, ZPixmap);
-}
-
 int main() {
     int DIAL_HEIGHT = 500, DIAL_WIDTH = 900;
 
+//    Space to initiate widgets and main dialog window starts here
     MyDialog dialog;
     dialog.init("Best GUI Presentation", 200, 200, DIAL_WIDTH, DIAL_HEIGHT);
 
@@ -55,17 +41,20 @@ int main() {
     SSbutton ssbutton;
     ssbutton.init(dialog.wi, 200, 100, "Take a Picture");
 
+//    Space to initiate widgets and main dialog window ends here
+
+//    Space for Creating functionality needed to handle actions with widgets, handle events
     XSelectInput(dialog.wi.display, dialog.wi.window, KeyPressMask | KeyReleaseMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
-    XEvent report, report1, report2;
+    XEvent report;
+//    Variables for handling button presses
     int temp_res1, temp_res2, temp_res3, temp_res4, temp_res5, temp_res6;
 
-
-
-    // loop, for active listening of any events
+//    loop, for active listening of any events
     while (1) {
-        // take event from query
+//        take event from query
         XNextEvent(dialog.wi.display, &report);
 
+//        Tracking if mouse cursor is in the area of button to trigger the Expose event
         if (report.type == MotionNotify) {
             if (button1.button_mouseover_changed(&report.xmotion) || button2.button_mouseover_changed(&report.xmotion)
                 || rd1.button_mouseover_changed(&report.xmotion) || tif.button_mouseover_changed(&report.xmotion)
@@ -73,15 +62,16 @@ int main() {
                 report.type = Expose;
             }
         }
-        /* select kind of events we are interested in */
-        /* map (show) the window */
-
+//        select kind of events we are interested in
+//        Here are listed possible events in a way of Cases (KeyPress and KeyRelease are realised separately)
+//        Among these cases user can implement own cases of communication between server and client
         switch (report.type) {
             // expose event
             case Expose :
                 dialog.wi.gc = XCreateGC(dialog.wi.display, dialog.wi.window, 0, NULL);
                 XSetForeground(dialog.wi.display, dialog.wi.gc, BlackPixel (dialog.wi.display, 0));
 
+//                Space for displaying widgets on Window
                 text_box.expose();
                 text_box1.expose();
                 button1.expose();
@@ -96,12 +86,14 @@ int main() {
                 break;
             case ButtonPress:
             case ButtonRelease:
-                temp_res1 = button1.is_button_clicked(&(report.xbutton));
-                temp_res2 = button2.is_button_clicked(&(report.xbutton));
-                temp_res3 = rd1.is_button_clicked(&(report.xbutton));
-                temp_res4 = tif.is_button_clicked(&(report.xbutton));
-                temp_res5 = ddl.is_button_clicked(&(report.xbutton));
-                temp_res6 = ssbutton.is_button_clicked(&(report.xbutton));
+
+//              Track if buttons are pressed and perform correcponding actions
+                temp_res1 = button1.is_button_clicked(&(report.xbutton)); // Button
+                temp_res2 = button2.is_button_clicked(&(report.xbutton)); // Button
+                temp_res3 = rd1.is_button_clicked(&(report.xbutton)); // Radio button
+                temp_res4 = tif.is_button_clicked(&(report.xbutton)); // Text input field
+                temp_res5 = ddl.is_button_clicked(&(report.xbutton)); // Drop down list
+                temp_res6 = ssbutton.is_button_clicked(&(report.xbutton)); //Screenshot button
 
                 if (temp_res6 == BTN_IS_CLICKED){
                     if (ssbutton.is_active == 1){
@@ -127,11 +119,8 @@ int main() {
                 else if (temp_res3 == BTN_IS_CLICKED) {
                     std::cout << "Radio Button  is clicked!!!" << std::endl;
                     rd1.expose();
-
-
                 }
                 break;
-
         }
         if (report.type == KeyPress  ){
             if(temp_res4 == BTN_IS_CLICKED ){
@@ -141,6 +130,7 @@ int main() {
             }
         }else if (report.type == KeyRelease)
         {
+//            A quick way to check if server accepts the keyboardd key presses
             KeySym sym1=XLookupKeysym(&report.xkey, 0);
             printf( "KeyRelease: %s\n", XKeysymToString(sym1) );
         }
