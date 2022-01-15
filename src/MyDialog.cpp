@@ -2,8 +2,8 @@
 
 
 void MyDialog::init(const char *title, int in_x, int in_y, int Width, int Height){
-    x = in_x;
-    y = in_y;
+    xd = in_x;
+    yd = in_y;
     width = Width;
     height = Height;
     std::vector<MyWidget> w;
@@ -25,7 +25,7 @@ void MyDialog::init(const char *title, int in_x, int in_y, int Width, int Height
     // create window
     wi.window = XCreateSimpleWindow(wi.display,
                                  RootWindow (wi.display, ScreenNumber),
-                                 x, y, width, height, BORDER_WIDTH,
+                                 xd, yd, width, height, BORDER_WIDTH,
                                  BlackPixel (wi.display, ScreenNumber),
                                  WhitePixel (wi.display, ScreenNumber));
 
@@ -42,6 +42,7 @@ void MyDialog::init(const char *title, int in_x, int in_y, int Width, int Height
     wi.gc = XCreateGC(wi.display, wi.window, 0, NULL);
 
     XMapWindow(wi.display, wi.window);
+    XMoveWindow(wi.display,wi.window, xd, yd);
 };
 
 void MyDialog::draw(){

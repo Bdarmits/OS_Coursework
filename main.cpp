@@ -1,48 +1,65 @@
 ///xfontsel///
-
 #include <iostream>
 #include "include/window.h"
 #include "include/widget.h"
 #include "include/text.h"
 #include "include/button.h"
 #include "include/MyDialog.h"
-int DIAL_HEIGHT = 500, DIAL_WIDTH = 900;
+#include "include/radiobutton.h"
+#include "include/TextInputField.h"
+#include "include/dropdownlist.h"
+#include "include/SSbutton.h"
+#include <X11/Xlib.h>
+
+
+
+XImage *create_ximage(Display *display, Visual *visual, Window window)
+{
+
+    XWindowAttributes attr = {};
+    XGetWindowAttributes(display, window, &attr);
+
+    auto widthimg = attr.width;
+    auto heightimg = attr.height;
+
+    return XGetImage(display, window, 0, 0, widthimg, heightimg, AllPlanes, ZPixmap);
+}
+
 int main() {
+    int DIAL_HEIGHT = 500, DIAL_WIDTH = 900;
+
     MyDialog dialog;
-    dialog.init("Party Game Box", 20, 20, DIAL_WIDTH, DIAL_HEIGHT);
-
-
+    dialog.init("Best GUI Presentation", 200, 200, DIAL_WIDTH, DIAL_HEIGHT);
 
     Text text_box;
-    text_box.init(dialog.wi, "Welcome to the Party Game Box", DIAL_WIDTH/2,DIAL_HEIGHT/2 - 100, 20, 20,  "24");
-    text_box.draw();
+    text_box.init(dialog.wi, "Welcome to the Best X11 GUI", DIAL_WIDTH/2,DIAL_HEIGHT/2 - 100, 20, 20,  "24");
 
     Text text_box1;
-    text_box1.init(dialog.wi, "Choose your game", DIAL_WIDTH/2 +30,DIAL_HEIGHT/2 - 70, 20, 20, "16");
-    text_box1.draw();
+    text_box1.init(dialog.wi, "Enjoy! :)", DIAL_WIDTH/2 +30,DIAL_HEIGHT/2 - 70, 20, 20, "16");
 
     Button button1;
-    button1.init(dialog.wi, 35, 35, "Options");
-    button1.draw();
+    button1.init(dialog.wi, 35, 35, "Button1");
 
+    RadioButton rd1;
+    rd1.init(dialog.wi, 400, 35, "radio test");
+
+    TextInputField tif;
+    tif.init(dialog.wi, 600, 35, "" );
+
+    Dropdownlist ddl;
+    ddl.init(dialog.wi, 35, 100, "dropdown");
 
     Button button2;
-    button2.init(dialog.wi, 200, 35, "New Game");
-    button2.draw();
+    button2.init(dialog.wi, 200, 35, "Button2");
 
-
-    dialog.add_widget(text_box);
-    dialog.add_widget(text_box1);
-
-    dialog.add_widget(button1);
-    dialog.add_widget(button2);
-
+    SSbutton ssbutton;
+    ssbutton.init(dialog.wi, 200, 100, "Take a Picture");
 
     XSelectInput(dialog.wi.display, dialog.wi.window, KeyPressMask | KeyReleaseMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+    XEvent report, report1, report2;
+    int temp_res1, temp_res2, temp_res3, temp_res4, temp_res5, temp_res6;
 
 
-    XEvent report, report1;
-    int temp_res1, temp_res2;
 
     // loop, for active listening of any events
     while (1) {
@@ -50,38 +67,29 @@ int main() {
         XNextEvent(dialog.wi.display, &report);
 
         if (report.type == MotionNotify) {
-            if (button1.button_mouseover_changed(&report.xmotion) || button2.button_mouseover_changed(&report.xmotion)) {
+            if (button1.button_mouseover_changed(&report.xmotion) || button2.button_mouseover_changed(&report.xmotion)
+                || rd1.button_mouseover_changed(&report.xmotion) || tif.button_mouseover_changed(&report.xmotion)
+                || ddl.button_mouseover_changed(&report.xmotion) || ssbutton.button_mouseover_changed(&report.xmotion) ) {
                 report.type = Expose;
             }
         }
         /* select kind of events we are interested in */
-
         /* map (show) the window */
-//        XMapWindow(dialog.wi.display, dialog.wi.window);
 
         switch (report.type) {
             // expose event
             case Expose :
-                // wait untill all expose events will come
-                //next 2 rows are commented as temporary fix -  allow to redraw button
-                /*
-               if (report.xexpose.count != 0) {
-                    break;
-               }
-                 */
                 dialog.wi.gc = XCreateGC(dialog.wi.display, dialog.wi.window, 0, NULL);
                 XSetForeground(dialog.wi.display, dialog.wi.gc, BlackPixel (dialog.wi.display, 0));
 
-
-                //TODO: rewrite with dialog expose
-                //dialog.expose();
-
                 text_box.expose();
                 text_box1.expose();
-
                 button1.expose();
                 button2.expose();
-
+                rd1.expose();
+                tif.expose();
+                ddl.expose();
+                ssbutton.expose();
 
                 XFreeGC(dialog.wi.display, dialog.wi.gc);
                 XFlush(dialog.wi.display);
@@ -90,71 +98,54 @@ int main() {
             case ButtonRelease:
                 temp_res1 = button1.is_button_clicked(&(report.xbutton));
                 temp_res2 = button2.is_button_clicked(&(report.xbutton));
-                if (temp_res1 == BTN_IS_CLICKED) {
-                    std::cout << "Button 1 is clicked!!!" << std::endl;
-                    MyDialog dialog1;
-                    dialog1.init("Party Game Box", 20, 20, DIAL_WIDTH, DIAL_HEIGHT);
+                temp_res3 = rd1.is_button_clicked(&(report.xbutton));
+                temp_res4 = tif.is_button_clicked(&(report.xbutton));
+                temp_res5 = ddl.is_button_clicked(&(report.xbutton));
+                temp_res6 = ssbutton.is_button_clicked(&(report.xbutton));
 
-                    std::string nickname = "";
-                    Text text_box2;
-                    text_box2.init(dialog1.wi, nickname.c_str(), DIAL_WIDTH/2,DIAL_HEIGHT/2 - 100, 20, 20,  "24");
-                    text_box2.draw();
-                    while (1){
-                        XNextEvent(dialog1.wi.display, &report1);
-                        if (report1.type == KeyPress){
-
-                            KeySym sym1=XLookupKeysym(&report1.xkey, 0);
-                            printf( "KeyPress: %s\n", XKeysymToString(sym1) );
-                            if(report1.xkey.keycode == 0x09){
-                                break;
-                            }
-                            //nickname.c_str()
-                            nickname += XKeysymToString(sym1);
-                            text_box2.init(dialog1.wi, nickname.c_str(), DIAL_WIDTH/2,DIAL_HEIGHT/2 - 100, 20, 20,  "24");
-                            text_box2.draw();
-                            dialog1.add_widget(text_box2);
-
-                        }
-                        if (report1.type == Expose){
-//                            dialog1.wi.gc = XCreateGC(dialog1.wi.display, dialog1.wi.window, 0, NULL);
-//                            XSetForeground(dialog1.wi.display, dialog1.wi.gc, BlackPixel (dialog1.wi.display, 0));
-                            text_box2.expose();
-//                            XFreeGC(dialog1.wi.display, dialog1.wi.gc);
-//                            XFlush(dialog1.wi.display);
-                        }
+                if (temp_res6 == BTN_IS_CLICKED){
+                    if (ssbutton.is_active == 1){
+                        ssbutton.is_active = 0;
                     }
-                    XCloseDisplay(dialog1.wi.display);
-                    printf("%s", nickname.c_str());
+                    ssbutton.spam_menu(dialog);
+                }
+                else if (temp_res5 == BTN_IS_CLICKED ){
+                    if (ddl.is_active == 1){
+                        ddl.destroy_menu();
+                        ddl.is_active = 0;
+                    }
+                    std::cout << " Dropdown  is clicked!!!" << std::endl;
+                    ddl.spam_menu();
+                }
+                else if (temp_res1 == BTN_IS_CLICKED) {
+                    std::cout << "Button 1 is clicked!!!" << std::endl;
 
                 }
                 else if (temp_res2 == BTN_IS_CLICKED) {
                     std::cout << "Button 2 is clicked!!!" << std::endl;
                 }
+                else if (temp_res3 == BTN_IS_CLICKED) {
+                    std::cout << "Radio Button  is clicked!!!" << std::endl;
+                    rd1.expose();
+
+
+                }
                 break;
-//            case KeyPress :
-//                // in case of press of any key, close connection and exit from the program
-//                if ( report.xkey.keycode == 0x09 ){
-//                    XCloseDisplay(dialog.wi.display);
-////                    _exit(0);
-//                    break;
-//                }
-////                    break;
 
         }
-        if (report.type == KeyPress){
-            KeySym sym=XLookupKeysym(&report.xkey, 0);
-            printf( "KeyPress: %s\n", XKeysymToString(sym) );
-            if(report.xkey.keycode == 0x09){
+        if (report.type == KeyPress  ){
+            if(temp_res4 == BTN_IS_CLICKED ){
+                tif.add_text(report);
+            }else if(report.xkey.keycode == 0x09 ){
                 break;
             }
         }else if (report.type == KeyRelease)
         {
-            KeySym sym=XLookupKeysym(&report.xkey, 0);
-            printf( "KeyPress: %s\n", XKeysymToString(sym) );
+            KeySym sym1=XLookupKeysym(&report.xkey, 0);
+            printf( "KeyRelease: %s\n", XKeysymToString(sym1) );
         }
 
     }
     XCloseDisplay(dialog.wi.display);
-
     return 0;
 }

@@ -3,19 +3,21 @@
 
 
 #include "widget.h"
+#include "button.h"
 
-class RadioButton : public MyWidget    {
+class RadioButton : public Button    {
 public:
-    int clicked;
-    XFontStruct* font;
-    const char *text;
+    int activ_radio = 0;
+//    int clicked;
+//    XFontStruct* font;
+//    const char *text;
+//    int rd_x;
+//    int rd_y;
+//    int state;
 
-    void init(MyWindow window1, int x, int y, const char *text);
-
-    void draw();
-
-    void expose();
-    //TODO: add any helper functions if needed
+//    void init(window_info window1, int x, int y, const char *in_text);
+    button_clicked_state_t is_button_clicked(const XButtonEvent* xbutton ) override;
+    void draw() override;
 
 
 };

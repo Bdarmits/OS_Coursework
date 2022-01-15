@@ -10,11 +10,11 @@
 #include <iostream>
 #include <cstdlib>
 
-#define X 0
-#define Y 0
+#define X 1100
+#define Y 1100
 #define WIDTH 300
 #define HEIGHT 100
-#define BORDER_WIDTH 5
+#define BORDER_WIDTH 50
 
 
 class MyWindow {

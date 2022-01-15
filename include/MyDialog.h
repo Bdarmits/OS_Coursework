@@ -21,7 +21,7 @@ public:
     //std::vector<XEvent.type> events_types;
 
     std::vector<MyWidget> widgets;
-    int x, y, width, height;
+    int xd, yd, width, height;
 
     void init(const char *title, int in_x, int in_y, int Width, int Height);
 

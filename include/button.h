@@ -18,12 +18,15 @@ public:
 
     void init(window_info wi, int x, int y, const char * text);
 
-    button_clicked_state_t is_button_clicked(const XButtonEvent* xbutton );
+    virtual button_clicked_state_t is_button_clicked(const XButtonEvent* xbutton );
     int button_mouseover_changed(const XMotionEvent* xmotion);
 
-    void draw();
+    virtual void draw();
 
-    void expose();
+    void expose();//
+// Created by bohdan on 17.12.21.
+//
+
 
 private:
 

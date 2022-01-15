@@ -61,8 +61,8 @@ void Button::init(window_info wi, int in_x, int in_y, const char *in_text) {
     XTextExtents(font, text, strlen(text), &direction, &ascent, &descent, &overall);
 
     // Compute the shape of the button_t
-    width = overall.width + 30;
-    height = ascent + descent + 5;
+    width = overall.width + 60;
+    height = ascent + descent + 10;
     x = in_x;
     y = in_y;
 

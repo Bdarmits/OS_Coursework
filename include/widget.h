@@ -6,6 +6,9 @@
 #define HEIGHT 100
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/Xatom.h>
 #include "window.h"
 
 
@@ -16,7 +19,6 @@ public:
     Display *display;
     Window window;
     GC gc;
-
     int x;
     int y;
     unsigned int width;
